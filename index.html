@@ -510,8 +510,13 @@
             console.log('GitHub settings:', {
                 username: githubSettings.username,
                 repo: githubSettings.repo,
-                hasToken: !!githubSettings.token
+                hasToken: !!githubSettings.token,
+                tokenLength: githubSettings.token ? githubSettings.token.length : 0
             });
+            
+            if (!githubSettings.token) {
+                throw new Error('No GitHub token available. Cannot save to GitHub.');
+            }
             
             const metadataContent = btoa(JSON.stringify(homeworks, null, 2));
             console.log('Metadata content length:', metadataContent.length);
@@ -551,6 +556,8 @@
             });
 
             console.log('Metadata save response status:', metadataResponse.status);
+            console.log('Response headers:', Object.fromEntries(metadataResponse.headers.entries()));
+            
             if (!metadataResponse.ok) {
                 const errorData = await metadataResponse.json();
                 console.error('GitHub API error:', errorData);
@@ -595,6 +602,12 @@
         }
 
         async function deleteHomework(id) {
+            // Check if GitHub token is available
+            if (!githubSettings.token) {
+                alert('❌ Cannot delete: GitHub Personal Access Token is not configured.\n\nFor local development:\n1. Copy config.example.js to config.js\n2. Add your GitHub PAT to config.js\n\nFor deployed version:\nContact admin to set up environment variables.');
+                return;
+            }
+            
             // Ask for delete key first
             openDeleteKeyModal(id);
         }
@@ -612,17 +625,20 @@
             const hwToDelete = homeworks.find(h => h.id === id);
             console.log('Homework to delete:', hwToDelete);
 
-            // Remove from local array
+            // Remove from local array IMMEDIATELY for instant UI feedback
             const beforeCount = homeworks.length;
             homeworks = homeworks.filter(h => h.id !== id);
             const afterCount = homeworks.length;
             console.log('Homework removed from array. Before:', beforeCount, 'After:', afterCount);
+            
+            // Re-render immediately to show it's gone
+            renderHomeworks();
+            console.log('UI re-rendered after removal');
 
             try {
                 console.log('Saving metadata to GitHub...');
                 await saveHomeworkMetadata();
                 console.log('Metadata saved successfully');
-                renderHomeworks();
                 alert('✅ Homework deleted successfully!');
             } catch (error) {
                 console.error('Error saving metadata:', error);
@@ -630,6 +646,7 @@
                 // Revert the deletion if save failed
                 console.log('Reverting deletion due to error');
                 await fetchHomeworksFromGitHub();
+                renderHomeworks();
             }
         }
 
