@@ -4,42 +4,54 @@ A secure web application for uploading and managing IELTS homework files directl
 
 ## Features
 
-- ✅ **Password Protection**: Only authorized batch members can access (Security Code: `BanKsa@2026`)
-- ✅ **Upload Key Protection**: Secret key required to upload files (Upload Key: `sanywillupload`)
+- ✅ **Password Protection**: Only authorized batch members can access
+- ✅ **Upload Key Protection**: Secret key required to upload files
 - ✅ **Direct GitHub Upload**: Files are uploaded directly to your GitHub repository
 - ✅ **Module Organization**: Files automatically organized into folders by IELTS module
 - ✅ **Cross-Device Access**: Anyone with the password can view homework from any device
 - ✅ **File Support**: Screenshots (PNG, JPG, JPEG), PDFs, and Word documents (DOCX)
 - ✅ **Full-Screen Preview**: Click images to view in full resolution
 - ✅ **Download Support**: Direct download links for PDFs and Word files
-- ✅ **Pre-configured**: GitHub repository already set up - just start using!
 
 ## Quick Start
 
+### Local Development
+
+1. Copy `config.example.js` to `config.js`
+2. Fill in your GitHub credentials in `config.js`
+3. Open `index.html` in your browser
+4. Enter the security code (contact admin for credentials)
+5. Use the app normally
+
+### Deployed Version (Vercel)
+
+1. Visit the deployed URL
+2. Enter the security code (contact admin for credentials)
+3. Use the app normally
+4. GitHub credentials are set via environment variables in Vercel
+
 ### For Anyone Who Wants to Upload Files
 
-1. Open `index.html` in your browser
-2. Enter the security code: `BanKsa@2026`
+1. Open the app (local or deployed)
+2. Enter the security code
 3. Click **Publish New Homework**
-4. Enter the **secret upload key**: `sanywillupload`
+4. Enter the secret upload key (contact admin for credentials)
 5. Select module, add title/notes, upload files
 6. Click **Upload to GitHub**
 
-**Note**: GitHub settings are pre-configured - no setup needed!
-
 ### For Viewing Only (No Upload)
 
-1. Open `index.html` in your browser
-2. Enter the security code: `BanKsa@2026`
+1. Open the app (local or deployed)
+2. Enter the security code
 3. That's it! You can view all homeworks
 
 **Note**: Anyone with the upload key can upload files. Viewers can only view and download.
 
 ## Repository Structure
 
-Files are automatically organized in your GitHub repository:
+Files are automatically organized in the GitHub repository:
 ```
-homeworkhicu/
+repository/
 ├── listening/
 │   └── timestamp-filename.png
 ├── reading/
@@ -50,12 +62,6 @@ homeworkhicu/
 │   └── timestamp-filename.png
 └── homeworks.json (metadata)
 ```
-
-## GitHub Repository
-
-- **Repository**: https://github.com/acquirofun/homeworkhicu
-- **Status**: Public (accessible to all)
-- **Owner**: acquirofun
 
 ## File Size Limits
 
@@ -70,7 +76,7 @@ homeworkhicu/
 **Common causes and solutions:**
 
 1. **Check GitHub Repository**
-   - Visit: https://github.com/acquirofun/homeworkhicu
+   - Visit your GitHub repository
    - Make sure the repository exists and is accessible
    - It should be a public repository
 
@@ -97,22 +103,49 @@ homeworkhicu/
 If uploads stop working, the pre-configured PAT may have expired. Contact the admin to update it.
 
 ### Files not showing for others
-- The repository must be public (it currently is)
+- The repository must be public
 - Share the `index.html` file with your batchmates
-- They just need the password: `BanKsa@2026`
+- They need the security code from the admin
 
 ## Deployment
 
-To deploy this application permanently for easy access:
+### Deploy to Vercel with Environment Variables
 
-1. Push `index.html` to your GitHub repository
-2. Go to [Vercel.com](https://vercel.com)
-3. Sign in with GitHub
-4. Click **Add New > Project**
-5. Import your repository
-6. Click **Deploy**
+1. **Push to GitHub**
 
-You'll get a permanent URL like: `https://homeworkhicu.vercel.app`
+2. **Go to Vercel**
+   - Visit [Vercel.com](https://vercel.com)
+   - Sign in with GitHub
+   - Click **Add New > Project**
+
+3. **Import Repository**
+   - Find and import your repository
+   - Click **Configure**
+
+4. **Set Environment Variables**
+   - Add these environment variables:
+     - `GITHUB_USERNAME`: Your GitHub username
+     - `GITHUB_REPO`: Your repository name
+     - `GITHUB_PAT`: Your GitHub Personal Access Token
+   - Click **Add** for each variable
+
+5. **Configure Build Settings**
+   - **Build Command**: `node build.js`
+   - **Output Directory**: `./`
+   - Click **Deploy**
+
+6. **Access Your Site**
+   - Wait for deployment (30-60 seconds)
+   - Visit your deployed URL
+
+### For Local Development
+
+1. Copy `config.example.js` to `config.js`
+2. Fill in your actual GitHub credentials in `config.js`
+3. Open `index.html` in your browser
+4. The app will use your local `config.js` file
+
+**Note**: `config.js` is in `.gitignore` and will never be committed to GitHub, keeping your token secure!
 
 ## Access Levels
 
@@ -125,13 +158,12 @@ You'll get a permanent URL like: `https://homeworkhicu.vercel.app`
 | GitHub Setup | ❌ (Pre-configured) | ❌ (Pre-configured) |
 
 **Security Codes:**
-- **Access Password**: `BanKsa@2026` (to enter the portal)
-- **Upload Key**: `sanywillupload` (to upload files)
+- **Access Password**: Contact admin for credentials (to enter the portal)
+- **Upload Key**: Contact admin for credentials (to upload files)
 
 **Pre-configured:**
-- GitHub Repository: acquirofun/homeworkhicu
-- GitHub PAT: Pre-configured with proper permissions
-- No GitHub setup needed for anyone!
+- GitHub credentials are pre-configured by the admin
+- No GitHub setup needed for users!
 
 ---
 
