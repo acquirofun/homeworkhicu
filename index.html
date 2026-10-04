@@ -341,8 +341,7 @@
                 console.log('Delete key verified. Homework to delete:', homeworkToDelete);
                 closeDeleteKeyModal();
                 if (homeworkToDelete !== null) {
-                    // Show loading state
-                    alert('Deleting homework... Please wait.');
+                    console.log('Calling performDelete with ID:', homeworkToDelete);
                     performDelete(homeworkToDelete);
                 }
             } else {
