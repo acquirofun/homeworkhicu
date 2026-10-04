@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HICU-222 IELTS Homework Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+
+    <!-- AUTHENTICATION SCREEN -->
+    <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 text-indigo-400 mb-3 text-2xl font-bold">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">HICU-222 Homework Hub</h1>
+                <p class="text-sm text-slate-400 mt-1">Enter your security code to access batch materials</p>
+            </div>
+            <form id="authForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Security Code</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="passcodeInput" required placeholder="Enter security code" 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm">
+                    </div>
+                    <p id="authError" class="text-red-400 text-xs mt-2 hidden">Incorrect security code. Please try again.</p>
+                </div>
+                <button type="submit" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2">
+                    <span>Access Portal</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="appContainer" class="hidden min-h-screen flex flex-col">
+        
+        <!-- HEADER -->
+        <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/30">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-white tracking-tight">HICU-222 LRWS Homework</h1>
+                        <p class="text-xs text-slate-400">Listening • Reading • Writing • Speaking Hub</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="handleLogout()" class="p-2 text-slate-400 hover:text-red-400 transition rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            
+            <!-- ACTIONS BAR & FILTERS -->
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60">
+                <!-- Module Tabs -->
+                <div class="flex flex-wrap gap-2" id="filterTabs">
+                    <button onclick="filterModule('ALL')" class="px-4 py-2 rounded-xl text-xs font-semibold transition bg-indigo-600 text-white shadow-md shadow-indigo-600/20 filter-btn" data-module="ALL">All Modules</button>
+                    <button onclick="filterModule('Listening')" class="px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-900 text-slate-300 hover:bg-slate-700 border border-slate-700 filter-btn" data-module="Listening"><i class="fa-solid fa-headphones mr-1.5"></i> Listening</button>
+                    <button onclick="filterModule('Reading')" class="px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-900 text-slate-300 hover:bg-slate-700 border border-slate-700 filter-btn" data-module="Reading"><i class="fa-solid fa-book-open mr-1.5"></i> Reading</button>
+                    <button onclick="filterModule('Writing')" class="px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-900 text-slate-300 hover:bg-slate-700 border border-slate-700 filter-btn" data-module="Writing"><i class="fa-solid fa-pen-nib mr-1.5"></i> Writing</button>
+                    <button onclick="filterModule('Speaking')" class="px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-900 text-slate-300 hover:bg-slate-700 border border-slate-700 filter-btn" data-module="Speaking"><i class="fa-solid fa-microphone mr-1.5"></i> Speaking</button>
+                </div>
+
+                <!-- Add Homework Button -->
+                <button onclick="openUploadModal()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Publish New Homework</span>
+                </button>
+            </div>
+
+            <!-- HOMEWORK GALLERY GRID -->
+            <div id="homeworkGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic cards inserted here -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="hidden text-center py-16 bg-slate-800/20 rounded-3xl border border-dashed border-slate-700">
+                <div class="w-16 h-16 mx-auto bg-slate-800 rounded-full flex items-center justify-center text-slate-500 text-2xl mb-4">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-medium text-white">No homework published yet</h3>
+                <p class="text-sm text-slate-400 mt-1">Click "Publish New Homework" to upload your files to GitHub.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- PUBLISH HOMEWORK MODAL -->
+    <div id="uploadModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-indigo-400"></i>
+                    <span>Publish Homework to GitHub</span>
+                </h2>
+                <button onclick="closeUploadModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="homeworkForm" onsubmit="saveHomework(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">IELTS Module</label>
+                    <select id="hwModule" required class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-indigo-500 text-sm">
+                        <option value="Listening">Listening Module</option>
+                        <option value="Reading">Reading Module</option>
+                        <option value="Writing">Writing Module</option>
+                        <option value="Speaking">Speaking Module</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Homework Title / Topic</label>
+                    <input type="text" id="hwTitle" required placeholder="e.g., Cambridge 18 Test 2 Writing Task 2" 
+                        class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Notes / Description (Optional)</label>
+                    <textarea id="hwNotes" rows="3" placeholder="Add key answers, word counts, or teacher remarks..." 
+                        class="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Upload Files (Screenshots, PDF, DOCX)</label>
+                    <div class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-950/50" onclick="document.getElementById('hwFiles').click()">
+                        <i class="fa-solid fa-file-arrow-up text-3xl text-indigo-400 mb-2"></i>
+                        <p class="text-sm text-slate-300 font-medium">Click to browse or drag files here</p>
+                        <p class="text-xs text-slate-500 mt-1">Supports PNG, JPG, JPEG, PDF, DOCX</p>
+                        <input type="file" id="hwFiles" multiple accept="image/*,.pdf,.docx,.doc" class="hidden" onchange="handleFileSelection(event)">
+                    </div>
+                    <div id="filePreviewList" class="mt-3 space-y-2"></div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeUploadModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-indigo-600/30">Upload to GitHub</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UPLOAD KEY MODAL -->
+    <div id="uploadKeyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-key text-amber-400"></i>
+                    <span>Upload Verification</span>
+                </h3>
+                <button onclick="closeUploadKeyModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                Enter the secret upload key to publish homework files.
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Secret Upload Key</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <input type="password" id="uploadKeyInput" placeholder="Enter upload key" 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <p id="uploadKeyError" class="text-red-400 text-xs mt-2 hidden">Incorrect upload key. Please try again.</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="closeUploadKeyModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition">Cancel</button>
+                    <button onclick="verifyUploadKey()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition">Verify & Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/90 backdrop-blur-md p-4" onclick="closeLightbox()">
+        <div class="relative max-w-4xl max-h-screen">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-indigo-400 transition"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightboxImg" src="" alt="Full view" class="max-h-[85vh] max-w-full rounded-xl object-contain shadow-2xl border border-slate-700">
+        </div>
+    </div>
+
+    <!-- APPLICATION SCRIPTS -->
+    <script>
+        const CORRECT_PASSCODE = "BanKsa@2026";
+        const UPLOAD_KEY = "sanywillupload";
+        let homeworks = [];
+        let activeFilter = 'ALL';
+        let stagedFiles = [];
+        let githubSettings = {
+            username: 'acquirofun',
+            repo: 'homeworkhicu',
+            token: 'YOUR_GITHUB_PAT_HERE' // Replace with your Personal Access Token
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('hicu222_authenticated') === 'true') {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                fetchHomeworksFromGitHub();
+            }
+        });
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const val = document.getElementById('passcodeInput').value;
+            if (val === CORRECT_PASSCODE) {
+                localStorage.setItem('hicu222_authenticated', 'true');
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                fetchHomeworksFromGitHub();
+            } else {
+                document.getElementById('authError').classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('hicu222_authenticated');
+            location.reload();
+        }
+
+        function openUploadModal() { 
+            document.getElementById('uploadKeyModal').classList.remove('hidden'); 
+            document.getElementById('uploadKeyModal').classList.add('flex');
+            document.getElementById('uploadKeyInput').value = '';
+            document.getElementById('uploadKeyError').classList.add('hidden');
+        }
+
+        function closeUploadKeyModal() {
+            document.getElementById('uploadKeyModal').classList.add('hidden');
+            document.getElementById('uploadKeyModal').classList.remove('flex');
+        }
+
+        function verifyUploadKey() {
+            const key = document.getElementById('uploadKeyInput').value;
+            if (key === UPLOAD_KEY) {
+                closeUploadKeyModal();
+                document.getElementById('uploadModal').classList.remove('hidden'); 
+                document.getElementById('uploadModal').classList.add('flex');
+            } else {
+                document.getElementById('uploadKeyError').classList.remove('hidden');
+            }
+        }
+        
+        function closeUploadModal() { 
+            document.getElementById('uploadModal').classList.add('hidden'); 
+            document.getElementById('uploadModal').classList.remove('flex');
+            document.getElementById('homeworkForm').reset();
+            stagedFiles = [];
+            document.getElementById('filePreviewList').innerHTML = '';
+        }
+
+        function handleFileSelection(e) {
+            const files = Array.from(e.target.files);
+            const previewList = document.getElementById('filePreviewList');
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    const fileObj = {
+                        name: file.name,
+                        type: file.type.includes('image') ? 'image' : (file.name.endsWith('.pdf') ? 'pdf' : 'doc'),
+                        data: uploadEvent.target.result,
+                        file: file
+                    };
+                    stagedFiles.push(fileObj);
+                    
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs text-slate-300";
+                    div.innerHTML = `<span class="truncate max-w-[280px]"><i class="fa-solid fa-file mr-2 text-indigo-400"></i>${file.name}</span><span class="text-emerald-400 font-medium">Ready</span>`;
+                    previewList.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function saveHomework(e) {
+            e.preventDefault();
+            
+            if (!githubSettings.token) {
+                alert('Please configure your GitHub Personal Access Token in settings to upload files!');
+                openSettingsModal();
+                return;
+            }
+
+            // Check PAT format
+            if (!githubSettings.token.startsWith('github_pat_') && !githubSettings.token.startsWith('ghp_')) {
+                alert('⚠️ Invalid Personal Access Token format!\n\nYour token should start with "github_pat_" or "ghp_"\n\nPlease check your GitHub settings.');
+                openSettingsModal();
+                return;
+            }
+
+            const module = document.getElementById('hwModule').value;
+            const title = document.getElementById('hwTitle').value;
+            const notes = document.getElementById('hwNotes').value;
+
+            // Ensure module folder exists by creating a .gitkeep file
+            const folder = module.toLowerCase();
+            try {
+                const gitkeepPath = `${folder}/.gitkeep`;
+                const gitkeepContent = btoa('');
+                
+                await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/${gitkeepPath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubSettings.token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: `Create ${folder} folder`,
+                        content: gitkeepContent
+                    })
+                });
+            } catch (err) {
+                // Folder might already exist, that's fine
+                console.log('Folder check:', err.message);
+            }
+
+            // Upload files to GitHub
+            const uploadedFiles = [];
+            for (const fileObj of stagedFiles) {
+                try {
+                    const fileName = `${Date.now()}-${fileObj.name}`;
+                    const folder = module.toLowerCase();
+                    const path = `${folder}/${fileName}`;
+                    
+                    // Get current file content if exists
+                    let sha = null;
+                    try {
+                        const existingFile = await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/${path}`, {
+                            headers: {
+                                'Authorization': `token ${githubSettings.token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        });
+                        if (existingFile.ok) {
+                            const existingData = await existingFile.json();
+                            sha = existingData.sha;
+                        }
+                    } catch (err) {
+                        // File doesn't exist yet, that's fine
+                    }
+
+                    // Upload file
+                    const response = await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${githubSettings.token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            message: `Upload homework: ${title}`,
+                            content: fileObj.data.split(',')[1], // Remove data URL prefix
+                            sha: sha
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        uploadedFiles.push({
+                            name: fileObj.name,
+                            type: fileObj.type,
+                            url: data.content.download_url,
+                            raw_url: data.content.raw_url
+                        });
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Failed to upload ${fileObj.name}\n\nError: ${errorData.message}\nStatus: ${response.status}`);
+                        return;
+                    }
+                } catch (error) {
+                    alert(`Error uploading ${fileObj.name}: ${error.message}\n\nPlease check:\n1. Internet connection\n2. Repository exists at https://github.com/${githubSettings.username}/${githubSettings.repo}\n3. PAT has 'repo' scope`);
+                    return;
+                }
+            }
+
+            // Save homework metadata
+            const newHw = {
+                id: Date.now(),
+                module,
+                title,
+                notes,
+                files: uploadedFiles,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            };
+
+            homeworks.unshift(newHw);
+            try {
+                await saveHomeworkMetadata();
+                closeUploadModal();
+                renderHomeworks();
+                alert('✅ Homework uploaded successfully!');
+            } catch (error) {
+                alert(`❌ Error: ${error.message}`);
+            }
+        }
+
+        async function saveHomeworkMetadata() {
+            const metadataContent = btoa(JSON.stringify(homeworks, null, 2));
+            
+            let sha = null;
+            try {
+                const existingFile = await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/homeworks.json`, {
+                    headers: {
+                        'Authorization': `token ${githubSettings.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (existingFile.ok) {
+                    const existingData = await existingFile.json();
+                    sha = existingData.sha;
+                }
+            } catch (err) {
+                // File doesn't exist yet
+            }
+
+            const metadataResponse = await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/homeworks.json`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubSettings.token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify({
+                    message: 'Update homework metadata',
+                    content: metadataContent,
+                    sha: sha
+                })
+            });
+
+            if (!metadataResponse.ok) {
+                const errorData = await metadataResponse.json();
+                throw new Error(`Failed to save metadata: ${errorData.message}`);
+            }
+        }
+
+        async function fetchHomeworksFromGitHub() {
+            if (!githubSettings.username || !githubSettings.repo) {
+                renderHomeworks();
+                return;
+            }
+
+            try {
+                const headers = {
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                
+                // Only add token if available (for uploading), but public repo can be read without it
+                if (githubSettings.token) {
+                    headers['Authorization'] = `token ${githubSettings.token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/repos/${githubSettings.username}/${githubSettings.repo}/contents/homeworks.json`, {
+                    headers: headers
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = atob(data.content);
+                    homeworks = JSON.parse(content);
+                } else {
+                    homeworks = [];
+                }
+            } catch (error) {
+                console.log('No existing homework data found');
+                homeworks = [];
+            }
+
+            renderHomeworks();
+        }
+
+        async function deleteHomework(id) {
+            if (!confirm('Are you sure you want to delete this homework entry?')) return;
+
+            // Note: This only removes the metadata. Files remain in GitHub.
+            // To delete files, you would need additional API calls.
+            homeworks = homeworks.filter(h => h.id !== id);
+            await saveHomeworkMetadata();
+            renderHomeworks();
+        }
+
+        function filterModule(module) {
+            activeFilter = module;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-module') === module) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition bg-indigo-600 text-white shadow-md shadow-indigo-600/20 filter-btn";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition bg-slate-900 text-slate-300 hover:bg-slate-700 border border-slate-700 filter-btn";
+                }
+            });
+            renderHomeworks();
+        }
+
+        function renderHomeworks() {
+            const grid = document.getElementById('homeworkGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const filtered = activeFilter === 'ALL' ? homeworks : homeworks.filter(h => h.module === activeFilter);
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(hw => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between shadow-xl hover:border-slate-600 transition";
+                
+                let badgeColor = "bg-indigo-500/20 text-indigo-400 border-indigo-500/30";
+                let iconClass = "fa-solid fa-book-open";
+                if (hw.module === 'Listening') { badgeColor = "bg-sky-500/20 text-sky-400 border-sky-500/30"; iconClass = "fa-solid fa-headphones"; }
+                else if (hw.module === 'Reading') { badgeColor = "bg-amber-500/20 text-amber-400 border-amber-500/30"; iconClass = "fa-solid fa-book-open"; }
+                else if (hw.module === 'Writing') { badgeColor = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"; iconClass = "fa-solid fa-pen-nib"; }
+                else if (hw.module === 'Speaking') { badgeColor = "bg-rose-500/20 text-rose-400 border-rose-500/30"; iconClass = "fa-solid fa-microphone"; }
+
+                let filesHtml = '';
+                if (hw.files && hw.files.length > 0) {
+                    filesHtml = '<div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-700/60">';
+                    hw.files.forEach(f => {
+                        if (f.type === 'image') {
+                            filesHtml += `<div onclick="openLightbox('${f.url}')" class="relative group cursor-pointer overflow-hidden rounded-xl bg-slate-950 h-24 border border-slate-700"><img src="${f.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"><div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition"><i class="fa-solid fa-magnifying-glass-plus"></i></div></div>`;
+                        } else if (f.type === 'pdf') {
+                            filesHtml += `<a href="${f.url}" download="${f.name}" class="flex items-center space-x-2 bg-slate-950 hover:bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs text-red-400 truncate"><i class="fa-solid fa-file-pdf text-base shrink-0"></i><span class="truncate text-slate-300">${f.name}</span></a>`;
+                        } else {
+                            filesHtml += `<a href="${f.url}" download="${f.name}" class="flex items-center space-x-2 bg-slate-950 hover:bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs text-blue-400 truncate"><i class="fa-solid fa-file-word text-base shrink-0"></i><span class="truncate text-slate-300">${f.name}</span></a>`;
+                        }
+                    });
+                    filesHtml += '</div>';
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold border ${badgeColor} flex items-center space-x-1.5">
+                                <i class="${iconClass}"></i>
+                                <span>${hw.module}</span>
+                            </span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-slate-400">${hw.date}</span>
+                                <button onclick="deleteHomework(${hw.id})" class="text-slate-500 hover:text-red-400 transition text-xs p-1" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-bold text-white mb-2">${hw.title}</h3>
+                        ${hw.notes ? `<p class="text-xs text-slate-300 bg-slate-950/50 p-3 rounded-xl border border-slate-700/50 whitespace-pre-wrap">${hw.notes}</p>` : ''}
+                    </div>
+                    <div>
+                        ${filesHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+            document.getElementById('lightboxModal').classList.add('flex');
+        }
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+            document.getElementById('lightboxModal').classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
