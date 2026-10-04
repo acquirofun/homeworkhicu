@@ -210,6 +210,39 @@
         </div>
     </div>
 
+    <!-- DELETE KEY MODAL -->
+    <div id="deleteKeyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-trash text-red-400"></i>
+                    <span>Delete Verification</span>
+                </h3>
+                <button onclick="closeDeleteKeyModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                Enter the secret delete key to remove this homework. This action cannot be undone.
+            </p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-2">Secret Delete Key</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <input type="password" id="deleteKeyInput" placeholder="Enter delete key" 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <p id="deleteKeyError" class="text-red-400 text-xs mt-2 hidden">Incorrect delete key. Please try again.</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteKeyModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition">Cancel</button>
+                    <button onclick="verifyDeleteKey()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-xl transition">Verify & Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- IMAGE LIGHTBOX MODAL -->
     <div id="lightboxModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/90 backdrop-blur-md p-4" onclick="closeLightbox()">
         <div class="relative max-w-4xl max-h-screen">
@@ -222,6 +255,7 @@
     <script>
         const CORRECT_PASSCODE = "BanKsa@2026";
         const UPLOAD_KEY = "sanywillupload";
+        const DELETE_KEY = "sanydeleted";
         let homeworks = [];
         let activeFilter = 'ALL';
         let stagedFiles = [];
@@ -279,6 +313,34 @@
                 document.getElementById('uploadModal').classList.add('flex');
             } else {
                 document.getElementById('uploadKeyError').classList.remove('hidden');
+            }
+        }
+
+        let homeworkToDelete = null;
+
+        function openDeleteKeyModal(id) {
+            homeworkToDelete = id;
+            document.getElementById('deleteKeyModal').classList.remove('hidden');
+            document.getElementById('deleteKeyModal').classList.add('flex');
+            document.getElementById('deleteKeyInput').value = '';
+            document.getElementById('deleteKeyError').classList.add('hidden');
+        }
+
+        function closeDeleteKeyModal() {
+            document.getElementById('deleteKeyModal').classList.add('hidden');
+            document.getElementById('deleteKeyModal').classList.remove('flex');
+            homeworkToDelete = null;
+        }
+
+        function verifyDeleteKey() {
+            const key = document.getElementById('deleteKeyInput').value;
+            if (key === DELETE_KEY) {
+                closeDeleteKeyModal();
+                if (homeworkToDelete !== null) {
+                    performDelete(homeworkToDelete);
+                }
+            } else {
+                document.getElementById('deleteKeyError').classList.remove('hidden');
             }
         }
         
@@ -512,7 +574,12 @@
         }
 
         async function deleteHomework(id) {
-            if (!confirm('Are you sure you want to delete this homework entry?')) return;
+            // Ask for delete key first
+            openDeleteKeyModal(id);
+        }
+
+        async function performDelete(id) {
+            if (!confirm('Are you sure you want to delete this homework entry? This action cannot be undone.')) return;
 
             // Note: This only removes the metadata. Files remain in GitHub.
             // To delete files, you would need additional API calls.
