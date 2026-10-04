@@ -39,6 +39,15 @@ A secure web application for uploading and managing IELTS homework files directl
 5. Select module, add title/notes, upload files
 6. Click **Upload to GitHub**
 
+### For Deleting Homework
+
+1. Click the trash icon on any homework card
+2. Enter the secret delete key (contact admin for credentials)
+3. Confirm the deletion
+4. Homework metadata is removed from the list
+
+**Note**: Deleting only removes the metadata. Actual files remain in GitHub folders.
+
 ### For Viewing Only (No Upload)
 
 1. Open the app (local or deployed)
@@ -149,17 +158,18 @@ If uploads stop working, the pre-configured PAT may have expired. Contact the ad
 
 ## Access Levels
 
-| Feature | With Upload Key | Without Upload Key |
-|--------|----------------|-------------------|
+| Feature | With Keys | Without Keys |
+|--------|-----------|--------------|
 | View homeworks | ✅ | ✅ |
 | Download files | ✅ | ✅ |
-| Upload homeworks | ✅ | ❌ |
-| Delete homeworks | ✅ | ❌ |
+| Upload homeworks | ✅ (with upload key) | ❌ |
+| Delete homeworks | ✅ (with delete key) | ❌ |
 | GitHub Setup | ❌ (Pre-configured) | ❌ (Pre-configured) |
 
 **Security Codes:**
 - **Access Password**: Contact admin for credentials (to enter the portal)
 - **Upload Key**: Contact admin for credentials (to upload files)
+- **Delete Key**: Contact admin for credentials (to delete homework)
 
 **Pre-configured:**
 - GitHub credentials are pre-configured by the admin
