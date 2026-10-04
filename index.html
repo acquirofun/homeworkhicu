@@ -255,7 +255,7 @@
     <script>
         const CORRECT_PASSCODE = "BanKsa@2026";
         const UPLOAD_KEY = "sanywillupload";
-        const DELETE_KEY = "sanydeleted";
+        const DELETE_KEY = "deletesany";
         let homeworks = [];
         let activeFilter = 'ALL';
         let stagedFiles = [];
@@ -319,6 +319,7 @@
         let homeworkToDelete = null;
 
         function openDeleteKeyModal(id) {
+            console.log('Opening delete modal for homework ID:', id);
             homeworkToDelete = id;
             document.getElementById('deleteKeyModal').classList.remove('hidden');
             document.getElementById('deleteKeyModal').classList.add('flex');
@@ -327,6 +328,7 @@
         }
 
         function closeDeleteKeyModal() {
+            console.log('Closing delete modal');
             document.getElementById('deleteKeyModal').classList.add('hidden');
             document.getElementById('deleteKeyModal').classList.remove('flex');
             homeworkToDelete = null;
@@ -334,12 +336,15 @@
 
         function verifyDeleteKey() {
             const key = document.getElementById('deleteKeyInput').value;
+            console.log('Verifying delete key. Input:', key, 'Expected:', DELETE_KEY);
             if (key === DELETE_KEY) {
+                console.log('Delete key verified. Homework to delete:', homeworkToDelete);
                 closeDeleteKeyModal();
                 if (homeworkToDelete !== null) {
                     performDelete(homeworkToDelete);
                 }
             } else {
+                console.log('Incorrect delete key');
                 document.getElementById('deleteKeyError').classList.remove('hidden');
             }
         }
@@ -584,8 +589,15 @@
             // Note: This only removes the metadata. Files remain in GitHub.
             // To delete files, you would need additional API calls.
             homeworks = homeworks.filter(h => h.id !== id);
-            await saveHomeworkMetadata();
-            renderHomeworks();
+            try {
+                await saveHomeworkMetadata();
+                renderHomeworks();
+                alert('Homework deleted successfully!');
+            } catch (error) {
+                alert('Error deleting homework: ' + error.message);
+                // Revert the deletion if save failed
+                await fetchHomeworksFromGitHub();
+            }
         }
 
         function filterModule(module) {
