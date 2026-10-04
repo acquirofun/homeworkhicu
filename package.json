@@ -1,0 +1,11 @@
+{
+  "name": "homeworkhicu",
+  "version": "1.0.0",
+  "description": "HICU-222 IELTS Homework Portal",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -8,6 +8,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Configuration -->
+    <script>
+        window.GITHUB_CONFIG = {
+            username: 'acquirofun',
+            repo: 'homeworkhicu',
+            token: '' // Set via environment variable in Vercel
+        };
+    </script>
+    <script src="config.js" onerror="console.log('config.js not found - using defaults')"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -216,10 +225,12 @@
         let homeworks = [];
         let activeFilter = 'ALL';
         let stagedFiles = [];
-        let githubSettings = {
+        
+        // Load GitHub configuration from config.js (gitignored) or use defaults
+        let githubSettings = window.GITHUB_CONFIG || {
             username: 'acquirofun',
             repo: 'homeworkhicu',
-            token: 'YOUR_GITHUB_PAT_HERE' // Replace with your Personal Access Token
+            token: '' // Empty - will be set in config.js locally or environment variables in Vercel
         };
 
         window.addEventListener('DOMContentLoaded', () => {
