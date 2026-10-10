@@ -1,5 +1,33 @@
 [
   {
+    "id": 1791598867938,
+    "module": "Reading",
+    "title": "Reading NC and SC",
+    "notes": "",
+    "files": [
+      {
+        "name": "C14R2NC.pdf",
+        "type": "pdf",
+        "url": "https://raw.githubusercontent.com/acquirofun/homeworkhicu/main/reading/1791598862323-C14R2NC.pdf"
+      }
+    ],
+    "date": "Oct 10, 2026"
+  },
+  {
+    "id": 1791598865871,
+    "module": "Reading",
+    "title": "Reading NC and SC",
+    "notes": "",
+    "files": [
+      {
+        "name": "C14R2NC.pdf",
+        "type": "pdf",
+        "url": "https://raw.githubusercontent.com/acquirofun/homeworkhicu/main/reading/1791598860751-C14R2NC.pdf"
+      }
+    ],
+    "date": "Oct 10, 2026"
+  },
+  {
     "id": 1791433908298,
     "module": "Writing",
     "title": "Classwork ",
